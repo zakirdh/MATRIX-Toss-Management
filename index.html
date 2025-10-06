@@ -61,7 +61,7 @@
             background: linear-gradient(90deg, var(--scala), var(--kotlin), var(--ruby), var(--elixir));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            /*text-shadow: 0 0 30px rgba(0, 229, 255, 0.5);*/
+            text-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
             /*animation: matrixGlow 4s infinite alternate;*/
             letter-spacing: 3px;
         }
@@ -674,8 +674,8 @@
     <header>
         <div class="header-bg"></div>
         <div class="matrix-logo">MATRIX 2k25</div>
-        <h2>Toss Management</h2>
-        
+        <h2>DH Bengal Art Fest</h2>
+        <p class="subtitle">Toss Management</p>
     </header>
 
     <!-- Main Content -->
@@ -685,22 +685,22 @@
             <div class="theme-card scala">
                 <div class="theme-icon">🌟</div>
                 <div class="theme-name">SCALA</div>
-                <p>Leader: NASIM SK <br> Asst. Leader : INTEKHAB ZIYA</p>
+                <p>NASIM SK & INTEKHAB ZIYA</p>
             </div>
             <div class="theme-card kotlin">
                 <div class="theme-icon">🌟</div>
                 <div class="theme-name">KOTLIN</div>
-                <p>Leader: AHMAD REZA <br> Asst. Leader : SAMIUL KARIM</p>
+                <p>AHMAD REZA & SAMIUL KARIM</p>
             </div>
             <div class="theme-card ruby">
                 <div class="theme-icon">🌟</div>
                 <div class="theme-name">RUBY</div>
-                <p>Leader: SABAN SULTAN <br> Asst. Leader : ARIF SEKH</p>
+                <p>SABAN SULTAN & ARIF AKHTAR</p>
             </div>
             <div class="theme-card elixir">
                 <div class="theme-icon">🌟</div>
                 <div class="theme-name">ELIXIR</div>
-                <p>Leader: ZISHAN REZA <br> Asst. Leader : NASIRUDDIN SK </p>
+                <p>ZISHAN REZA & NASIRUDDIN SK</p>
             </div>
         </div>
 
@@ -817,6 +817,9 @@
             ]
         };
 
+        // Track previous matchups to avoid repetition
+        let previousMatchups = {};
+
         // DOM Elements
         const eventSelect = document.getElementById('eventSelect');
         const shuffleBtn = document.getElementById('shuffleBtn');
@@ -932,7 +935,7 @@
             }, 3000);
         }
 
-        // Function to shuffle teams and create matchups
+        // Enhanced shuffle function to ensure unique matchups
         function shuffleTeams() {
             const selectedEvent = eventSelect.value;
             
@@ -978,52 +981,123 @@
             setTimeout(() => {
                 teamsDisplay.innerHTML = '';
                 
-                // Shuffle teams array
-                for (let i = teams.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [teams[i], teams[j]] = [teams[j], teams[i]];
-                }
+                // Get a unique matchup that hasn't been used recently
+                const matchup = getUniqueMatchup(selectedEvent, teams);
                 
                 // Create matchups
-                for (let i = 0; i < teams.length; i += 2) {
-                    if (i + 1 < teams.length) {
-                        // Create a matchup card
-                        const matchupCard = document.createElement('div');
-                        matchupCard.className = `team-card result-animation ${teams[i].theme.toLowerCase()}`;
-                        matchupCard.style.animationDelay = `${i/2 * 0.3}s`;
-                        
-                        // First team
-                        const team1 = document.createElement('div');
-                        team1.innerHTML = `
-                            <div class="team-name">${teams[i].name}</div>
-                            <div class="team-theme">${teams[i].theme} Team</div>
-                        `;
-                        
-                        // VS separator
-                        const vs = document.createElement('div');
-                        vs.className = 'vs';
-                        vs.textContent = 'VS';
-                        
-                        // Second team
-                        const team2 = document.createElement('div');
-                        team2.innerHTML = `
-                            <div class="team-name">${teams[i+1].name}</div>
-                            <div class="team-theme">${teams[i+1].theme} Team</div>
-                        `;
-                        
-                        // Append elements to matchup card
-                        matchupCard.appendChild(team1);
-                        matchupCard.appendChild(vs);
-                        matchupCard.appendChild(team2);
-                        
-                        // Append to teams display
-                        teamsDisplay.appendChild(matchupCard);
-                    }
+                for (let i = 0; i < matchup.length; i++) {
+                    const team1 = matchup[i][0];
+                    const team2 = matchup[i][1];
+                    
+                    // Create a matchup card
+                    const matchupCard = document.createElement('div');
+                    matchupCard.className = `team-card result-animation ${team1.theme.toLowerCase()}`;
+                    matchupCard.style.animationDelay = `${i * 0.3}s`;
+                    
+                    // First team
+                    const team1Element = document.createElement('div');
+                    team1Element.innerHTML = `
+                        <div class="team-name">${team1.name}</div>
+                        <div class="team-theme">${team1.theme} Team</div>
+                    `;
+                    
+                    // VS separator
+                    const vs = document.createElement('div');
+                    vs.className = 'vs';
+                    vs.textContent = 'VS';
+                    
+                    // Second team
+                    const team2Element = document.createElement('div');
+                    team2Element.innerHTML = `
+                        <div class="team-name">${team2.name}</div>
+                        <div class="team-theme">${team2.theme} Team</div>
+                    `;
+                    
+                    // Append elements to matchup card
+                    matchupCard.appendChild(team1Element);
+                    matchupCard.appendChild(vs);
+                    matchupCard.appendChild(team2Element);
+                    
+                    // Append to teams display
+                    teamsDisplay.appendChild(matchupCard);
                 }
                 
                 // Create confetti effect
                 createConfetti();
             }, 3000);
+        }
+
+        // Function to get a unique matchup that hasn't been used recently
+        function getUniqueMatchup(event, teams) {
+            // Generate all possible matchups
+            const allPossibleMatchups = generateAllMatchups(teams);
+            
+            // Initialize previous matchups for this event if not exists
+            if (!previousMatchups[event]) {
+                previousMatchups[event] = [];
+            }
+            
+            // Filter out recently used matchups
+            const availableMatchups = allPossibleMatchups.filter(matchup => {
+                return !previousMatchups[event].some(prev => 
+                    JSON.stringify(prev) === JSON.stringify(matchup)
+                );
+            });
+            
+            // If all matchups have been used recently, reset the history
+            let selectedMatchup;
+            if (availableMatchups.length === 0) {
+                selectedMatchup = allPossibleMatchups[Math.floor(Math.random() * allPossibleMatchups.length)];
+                previousMatchups[event] = [selectedMatchup]; // Reset with just this one
+            } else {
+                // Select a random matchup from available ones
+                selectedMatchup = availableMatchups[Math.floor(Math.random() * availableMatchups.length)];
+                
+                // Add to previous matchups
+                previousMatchups[event].push(selectedMatchup);
+                
+                // Keep only the last 2 matchups in history to avoid repetition
+                if (previousMatchups[event].length > 2) {
+                    previousMatchups[event].shift();
+                }
+            }
+            
+            return selectedMatchup;
+        }
+
+        // Function to generate all possible matchups for 4 teams
+        function generateAllMatchups(teams) {
+            const matchups = [];
+            const used = new Set();
+            
+            for (let i = 0; i < teams.length; i++) {
+                for (let j = i + 1; j < teams.length; j++) {
+                    // Create a matchup with these two teams
+                    const matchup = [[teams[i], teams[j]]];
+                    
+                    // Find the remaining teams for the other matchup
+                    const remainingTeams = teams.filter((_, index) => index !== i && index !== j);
+                    if (remainingTeams.length === 2) {
+                        matchup.push([remainingTeams[0], remainingTeams[1]]);
+                    }
+                    
+                    // Sort the matchup to ensure consistent representation
+                    const sortedMatchup = matchup.map(pair => 
+                        pair.sort((a, b) => a.name.localeCompare(b.name))
+                    ).sort((a, b) => a[0].name.localeCompare(b[0].name));
+                    
+                    // Create a unique key for this matchup
+                    const key = JSON.stringify(sortedMatchup);
+                    
+                    // Add if not already added
+                    if (!used.has(key)) {
+                        used.add(key);
+                        matchups.push(sortedMatchup);
+                    }
+                }
+            }
+            
+            return matchups;
         }
 
         // Function to create confetti effect
@@ -1073,6 +1147,9 @@
         function resetDisplay() {
             teamsDisplay.innerHTML = '<div class="placeholder"><p>Select an event and click "Shuffle Teams" to generate random matchups</p></div>';
             eventSelect.value = '';
+            
+            // Reset previous matchups for all events
+            previousMatchups = {};
             
             // Remove any remaining confetti
             document.querySelectorAll('.confetti').forEach(confetti => {
