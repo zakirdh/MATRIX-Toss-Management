@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MATRIX 2k25 - Toss Management</title>
+    <title>MATRIX 2k25 - Premium Toss Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Global Styles */
@@ -234,7 +234,7 @@
             margin-bottom: 3rem;
         }
 
-        select, button, input {
+        select, button {
             padding: 1rem 2rem;
             border-radius: 50px;
             border: none;
@@ -258,16 +258,6 @@
             background: var(--darker);
         }
 
-        input {
-            background: rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 300px;
-        }
-
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
         button {
             font-weight: 600;
             position: relative;
@@ -281,10 +271,6 @@
 
         .reset-btn {
             background: linear-gradient(90deg, var(--ruby), var(--elixir));
-        }
-
-        .add-program-btn {
-            background: linear-gradient(90deg, var(--success), #00e676);
         }
 
         button:hover {
@@ -311,95 +297,196 @@
             left: 100%;
         }
 
-        /* Paper Toss Animation */
-        .paper-toss-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 2rem;
-            margin: 3rem 0;
+        /* Premium Animation Container */
+        .animation-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem 0;
             perspective: 1000px;
+            overflow: hidden;
         }
 
-        .paper {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
-            border-radius: 8px;
+        /* Holographic Team Cards */
+        .hologram-card {
+            position: absolute;
+            width: 200px;
+            height: 250px;
+            border-radius: 15px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             font-weight: bold;
-            font-size: 1.2rem;
-            color: #333;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            position: relative;
+            font-size: 1.5rem;
+            color: white;
+            text-transform: uppercase;
+            box-shadow: 0 0 30px currentColor;
+            transition: all 0.5s ease;
             transform-style: preserve-3d;
+            backface-visibility: hidden;
+            opacity: 0;
         }
 
-        .paper::before {
+        .hologram-card.scala {
+            background: linear-gradient(135deg, var(--scala), transparent 70%);
+            border: 2px solid var(--scala);
+            color: var(--scala);
+            top: 20%;
+            left: 20%;
+        }
+
+        .hologram-card.kotlin {
+            background: linear-gradient(135deg, var(--kotlin), transparent 70%);
+            border: 2px solid var(--kotlin);
+            color: var(--kotlin);
+            top: 20%;
+            right: 20%;
+        }
+
+        .hologram-card.ruby {
+            background: linear-gradient(135deg, var(--ruby), transparent 70%);
+            border: 2px solid var(--ruby);
+            color: var(--ruby);
+            bottom: 20%;
+            left: 20%;
+        }
+
+        .hologram-card.elixir {
+            background: linear-gradient(135deg, var(--elixir), transparent 70%);
+            border: 2px solid var(--elixir);
+            color: var(--elixir);
+            bottom: 20%;
+            right: 20%;
+        }
+
+        .hologram-card::before {
             content: '';
             position: absolute;
-            top: 5px;
-            left: 5px;
-            right: 5px;
-            bottom: 5px;
-            border: 1px dashed rgba(0,0,0,0.1);
-            border-radius: 4px;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.8), transparent);
+            border-radius: 17px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s;
         }
 
-        .paper.scala { border: 3px solid var(--scala); }
-        .paper.kotlin { border: 3px solid var(--kotlin); }
-        .paper.ruby { border: 3px solid var(--ruby); }
-        .paper.elixir { border: 3px solid var(--elixir); }
-
-        .tossing .paper {
-            animation: paperToss 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        .hologram-card.active {
+            opacity: 1;
+            animation: hologramGlow 2s infinite alternate;
         }
 
-        @keyframes paperToss {
-            0% { 
-                transform: translateY(0) rotate(0deg) scale(1);
-                opacity: 1;
+        @keyframes hologramGlow {
+            0% {
+                box-shadow: 0 0 20px currentColor;
+                transform: translateY(0) rotateX(0);
             }
-            20% { 
-                transform: translateY(-100px) rotate(180deg) scale(1.1);
-            }
-            40% { 
-                transform: translateY(-200px) rotate(360deg) scale(1.2);
-            }
-            60% { 
-                transform: translateY(-150px) rotate(540deg) scale(1.1);
-            }
-            80% { 
-                transform: translateY(-50px) rotate(720deg) scale(1.05);
-            }
-            100% { 
-                transform: translateY(0) rotate(900deg) scale(1);
-                opacity: 1;
+            100% {
+                box-shadow: 0 0 40px currentColor, 0 0 60px currentColor;
+                transform: translateY(-10px) rotateX(5deg);
             }
         }
 
-        .bowl {
-            width: 200px;
+        /* Energy Orb */
+        .energy-orb {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
             height: 100px;
-            background: linear-gradient(135deg, #8B4513, #A0522D);
-            border-radius: 50% 50% 0 0;
-            position: relative;
-            margin: 2rem auto;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            background: radial-gradient(circle, var(--accent), transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 50px var(--accent);
+            opacity: 0;
+            z-index: 10;
         }
 
-        .bowl::after {
-            content: '';
+        .energy-orb.active {
+            animation: orbPulse 1.5s infinite alternate, orbRotate 4s linear infinite;
+        }
+
+        @keyframes orbPulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                box-shadow: 0 0 50px var(--accent);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.2);
+                box-shadow: 0 0 80px var(--accent), 0 0 120px var(--accent);
+            }
+        }
+
+        @keyframes orbRotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+            50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.1); }
+            100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
+        }
+
+        /* Laser Beams */
+        .laser-beam {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            bottom: 0;
-            background: linear-gradient(135deg, #CD853F, #8B4513);
-            border-radius: 50% 50% 0 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            transform-origin: left center;
+            opacity: 0;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .laser-beam.active {
+            animation: laserShot 0.5s forwards;
+        }
+
+        @keyframes laserShot {
+            0% {
+                width: 0;
+                opacity: 1;
+            }
+            80% {
+                width: 300px;
+                opacity: 1;
+            }
+            100% {
+                width: 300px;
+                opacity: 0;
+            }
+        }
+
+        /* Matchup Reveal */
+        .matchup-reveal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            z-index: 20;
+            opacity: 0;
+        }
+
+        .matchup-reveal.active {
+            animation: revealPopup 0.5s forwards 1s;
+        }
+
+        @keyframes revealPopup {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            70% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
         }
 
         /* Teams Display */
@@ -547,7 +634,7 @@
                 align-items: center;
             }
             
-            select, button, input {
+            select, button {
                 width: 100%;
                 max-width: 300px;
             }
@@ -556,10 +643,14 @@
                 padding: 2rem 1.5rem;
             }
             
-            .paper {
-                width: 100px;
-                height: 100px;
-                font-size: 1rem;
+            .animation-container {
+                height: 300px;
+            }
+            
+            .hologram-card {
+                width: 150px;
+                height: 200px;
+                font-size: 1.2rem;
             }
         }
     </style>
@@ -570,7 +661,7 @@
         <div class="header-bg"></div>
         <div class="matrix-logo">MATRIX 2k25</div>
         <h2>Art Fest Toss Management</h2>
-        <p class="subtitle">Real paper-toss simulation for completely fair team pairing</p>
+        <p class="subtitle">Premium holographic team pairing with stunning visual effects</p>
     </header>
 
     <!-- Main Content -->
@@ -601,7 +692,7 @@
 
         <!-- Toss Section -->
         <section class="toss-section">
-            <h3 class="section-title">Real Paper Toss Simulation</h3>
+            <h3 class="section-title">Holographic Team Matching</h3>
             
             <div class="controls">
                 <select id="eventSelect">
@@ -615,17 +706,17 @@
                 </select>
                 
                 <button id="shuffleBtn" class="shuffle-btn">
-                    <i class="fas fa-random"></i> Start Paper Toss
+                    <i class="fas fa-play"></i> Start Holographic Toss
                 </button>
                 <button id="resetBtn" class="reset-btn">
                     <i class="fas fa-redo"></i> Reset
                 </button>
             </div>
 
-            <div id="tossAnimation" class="paper-toss-container">
-                <!-- Paper toss animation will appear here -->
-                <div class="placeholder">
-                    <p>Select an event and click "Start Paper Toss" for a fair random draw</p>
+            <div id="animationContainer" class="animation-container">
+                <!-- Premium animation will appear here -->
+                <div class="placeholder" style="text-align: center; padding: 2rem;">
+                    <p>Select an event and click "Start Holographic Toss" for an amazing visual experience</p>
                 </div>
             </div>
 
@@ -642,93 +733,6 @@
     </footer>
 
     <script>
-        // Enhanced randomization using multiple entropy sources
-        class TrueRandom {
-            constructor() {
-                this.entropyPool = [];
-                this.lastMouseMove = Date.now();
-                this.init();
-            }
-
-            init() {
-                // Collect initial entropy from various sources
-                this.collectTimingEntropy();
-                this.setupEventListeners();
-            }
-
-            collectTimingEntropy() {
-                // Collect timing-based entropy
-                for (let i = 0; i < 10; i++) {
-                    this.entropyPool.push(Date.now() % 256);
-                    // Force some CPU work to create more entropy
-                    let j = 0;
-                    while (j < 1000) j++;
-                }
-            }
-
-            setupEventListeners() {
-                // Collect entropy from mouse movements
-                document.addEventListener('mousemove', (e) => {
-                    const now = Date.now();
-                    const timeDiff = now - this.lastMouseMove;
-                    this.entropyPool.push(
-                        (e.clientX + e.clientY + timeDiff) % 256
-                    );
-                    this.lastMouseMove = now;
-                    
-                    // Keep pool size manageable
-                    if (this.entropyPool.length > 1000) {
-                        this.entropyPool = this.entropyPool.slice(-500);
-                    }
-                });
-
-                // Collect entropy from key presses
-                document.addEventListener('keydown', (e) => {
-                    this.entropyPool.push(
-                        (e.keyCode + Date.now()) % 256
-                    );
-                });
-            }
-
-            // Strong random number generator
-            random() {
-                // Combine multiple entropy sources
-                const timeEntropy = Date.now() & 0xFF;
-                const perfEntropy = performance.now() * 1000000 & 0xFF;
-                const poolEntropy = this.entropyPool.length > 0 ? 
-                    this.entropyPool[Math.floor(this.randomWeak() * this.entropyPool.length)] : 0;
-                
-                // Use cryptographic-strength PRNG if available
-                if (window.crypto && window.crypto.getRandomValues) {
-                    const array = new Uint32Array(1);
-                    window.crypto.getRandomValues(array);
-                    return array[0] / 4294967296;
-                }
-
-                // Fallback to combined entropy method
-                const combined = (timeEntropy ^ perfEntropy ^ poolEntropy) / 256;
-                return combined;
-            }
-
-            // Weaker but faster random for non-critical uses
-            randomWeak() {
-                return Math.random();
-            }
-
-            // Shuffle array using Fisher-Yates with true randomness
-            shuffle(array) {
-                const result = [...array];
-                for (let i = result.length - 1; i > 0; i--) {
-                    const j = Math.floor(this.random() * (i + 1));
-                    [result[i], result[j]] = [result[j], result[i]];
-                }
-                return result;
-            }
-        }
-
-        // Initialize true random generator
-        const trueRandom = new TrueRandom();
-
         // Sample data for teams
         const teamsData = {
             football: [
@@ -776,15 +780,15 @@
         const eventSelect = document.getElementById('eventSelect');
         const shuffleBtn = document.getElementById('shuffleBtn');
         const resetBtn = document.getElementById('resetBtn');
-        const tossAnimation = document.getElementById('tossAnimation');
+        const animationContainer = document.getElementById('animationContainer');
         const teamsDisplay = document.getElementById('teamsDisplay');
 
         // Event Listeners
-        shuffleBtn.addEventListener('click', startPaperToss);
+        shuffleBtn.addEventListener('click', startPremiumAnimation);
         resetBtn.addEventListener('click', resetDisplay);
 
-        // Function to start paper toss animation
-        function startPaperToss() {
+        // Function to start premium animation
+        function startPremiumAnimation() {
             const selectedEvent = eventSelect.value;
             
             if (!selectedEvent) {
@@ -795,56 +799,124 @@
             const teams = [...teamsData[selectedEvent]];
             
             // Clear previous display
-            tossAnimation.innerHTML = '';
+            animationContainer.innerHTML = '';
             teamsDisplay.innerHTML = '';
             
-            // Create paper toss animation
-            createPaperTossAnimation(teams, selectedEvent);
+            // Create premium animation
+            createHolographicAnimation(teams, selectedEvent);
         }
 
-        // Function to create paper toss animation
-        function createPaperTossAnimation(teams, event) {
-            // Create bowl
-            const bowl = document.createElement('div');
-            bowl.className = 'bowl';
-            tossAnimation.appendChild(bowl);
-            
-            // Create papers with team names
-            const papersContainer = document.createElement('div');
-            papersContainer.style.display = 'flex';
-            papersContainer.style.flexWrap = 'wrap';
-            papersContainer.style.justifyContent = 'center';
-            papersContainer.style.gap = '1rem';
-            papersContainer.style.marginBottom = '2rem';
-            
+        // Function to create holographic animation
+        function createHolographicAnimation(teams, event) {
+            // Create energy orb
+            const orb = document.createElement('div');
+            orb.className = 'energy-orb';
+            animationContainer.appendChild(orb);
+
+            // Create hologram cards for each team
             teams.forEach(team => {
-                const paper = document.createElement('div');
-                paper.className = `paper ${team.theme.toLowerCase()}`;
-                paper.textContent = team.name;
-                papersContainer.appendChild(paper);
+                const card = document.createElement('div');
+                card.className = `hologram-card ${team.theme.toLowerCase()}`;
+                card.innerHTML = `
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">${getTeamIcon(team.name)}</div>
+                    <div>${team.name}</div>
+                `;
+                animationContainer.appendChild(card);
+            });
+
+            // Get all cards
+            const cards = animationContainer.querySelectorAll('.hologram-card');
+
+            // Start animation sequence
+            setTimeout(() => {
+                // Activate energy orb
+                orb.classList.add('active');
+
+                // Activate hologram cards one by one
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('active');
+                    }, index * 300);
+                });
+
+                // Create laser beams after cards appear
+                setTimeout(() => {
+                    createLaserBeams();
+
+                    // Show matchup reveal
+                    setTimeout(() => {
+                        showMatchupReveal(teams, event);
+                    }, 1500);
+                }, 1500);
+            }, 500);
+        }
+
+        // Function to create laser beams
+        function createLaserBeams() {
+            const angles = [0, 90, 180, 270];
+            
+            angles.forEach(angle => {
+                const beam = document.createElement('div');
+                beam.className = 'laser-beam';
+                beam.style.transform = `rotate(${angle}deg)`;
+                beam.style.top = '50%';
+                beam.style.left = '50%';
+                animationContainer.appendChild(beam);
+
+                setTimeout(() => {
+                    beam.classList.add('active');
+                }, 100);
+            });
+        }
+
+        // Function to show matchup reveal
+        function showMatchupReveal(teams, event) {
+            // Get a truly random matchup
+            const matchup = getTrueRandomMatchup(event, teams);
+            
+            // Create reveal element
+            const reveal = document.createElement('div');
+            reveal.className = 'matchup-reveal';
+            
+            // Create matchup content
+            let matchupHTML = '<h3 style="color: var(--accent); margin-bottom: 1.5rem;">MATCHUP RESULTS</h3>';
+            
+            matchup.forEach(pair => {
+                const team1 = pair[0];
+                const team2 = pair[1];
+                
+                matchupHTML += `
+                    <div style="margin: 1.5rem 0;">
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 2rem;">
+                            <div style="color: ${getTeamColor(team1.name)}; font-weight: bold; font-size: 1.5rem;">
+                                ${team1.name}
+                            </div>
+                            <div style="color: var(--gold); font-weight: bold; font-size: 1.2rem;">VS</div>
+                            <div style="color: ${getTeamColor(team2.name)}; font-weight: bold; font-size: 1.5rem;">
+                                ${team2.name}
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
             
-            tossAnimation.insertBefore(papersContainer, bowl);
+            reveal.innerHTML = matchupHTML;
+            animationContainer.appendChild(reveal);
             
-            // Add tossing animation after a brief delay
+            // Activate reveal
             setTimeout(() => {
-                papersContainer.classList.add('tossing');
+                reveal.classList.add('active');
                 
-                // After animation completes, show results
+                // Show final team cards after reveal
                 setTimeout(() => {
-                    showTossResults(teams, event);
+                    showFinalTeams(matchup);
                 }, 2000);
             }, 500);
         }
 
-        // Function to show toss results
-        function showTossResults(teams, event) {
-            tossAnimation.innerHTML = '';
-            
-            // Get a truly random matchup
-            const matchup = getTrueRandomMatchup(event, teams);
-            
-            // Display the matchup
+        // Function to show final team cards
+        function showFinalTeams(matchup) {
+            animationContainer.innerHTML = '';
             teamsDisplay.innerHTML = '';
             
             matchup.forEach((pair, index) => {
@@ -888,6 +960,28 @@
             createConfetti();
         }
 
+        // Helper function to get team icon
+        function getTeamIcon(teamName) {
+            const icons = {
+                'SCALA': '🎨',
+                'KOTLIN': '💻',
+                'RUBY': '🎭',
+                'ELIXIR': '🔮'
+            };
+            return icons[teamName] || '⚡';
+        }
+
+        // Helper function to get team color
+        function getTeamColor(teamName) {
+            const colors = {
+                'SCALA': '#DE3163',
+                'KOTLIN': '#7F00FF',
+                'RUBY': '#E0115F',
+                'ELIXIR': '#4B0082'
+            };
+            return colors[teamName] || '#FFFFFF';
+        }
+
         // Enhanced function to get truly random matchup
         function getTrueRandomMatchup(event, teams) {
             // Generate all possible matchups
@@ -898,8 +992,16 @@
                 previousMatchups[event] = [];
             }
             
-            // Use true random to select matchup
-            const randomIndex = Math.floor(trueRandom.random() * allPossibleMatchups.length);
+            // Use crypto-strength random if available
+            let randomIndex;
+            if (window.crypto && window.crypto.getRandomValues) {
+                const array = new Uint32Array(1);
+                window.crypto.getRandomValues(array);
+                randomIndex = array[0] % allPossibleMatchups.length;
+            } else {
+                randomIndex = Math.floor(Math.random() * allPossibleMatchups.length);
+            }
+            
             let selectedMatchup = allPossibleMatchups[randomIndex];
             
             // If this matchup was used recently and we have alternatives, try to avoid it
@@ -959,7 +1061,7 @@
 
         // Function to create confetti effect
         function createConfetti() {
-            const confettiCount = 100;
+            const confettiCount = 150;
             const colors = ['#ffd700', '#00e5ff', '#de3163', '#7f00ff'];
             
             for (let i = 0; i < confettiCount; i++) {
@@ -1002,7 +1104,7 @@
 
         // Function to reset the display
         function resetDisplay() {
-            tossAnimation.innerHTML = '<div class="placeholder"><p>Select an event and click "Start Paper Toss" for a fair random draw</p></div>';
+            animationContainer.innerHTML = '<div class="placeholder" style="text-align: center; padding: 2rem;"><p>Select an event and click "Start Holographic Toss" for an amazing visual experience</p></div>';
             teamsDisplay.innerHTML = '';
             eventSelect.value = '';
             
